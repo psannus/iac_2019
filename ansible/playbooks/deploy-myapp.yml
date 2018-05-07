@@ -1,0 +1,34 @@
+- name: provision my-appserver
+  hosts: "myapp-server"
+  become: yes
+
+  vars_prompt:
+  - name: "package"
+    default: "demo-0.0.1-SNAPSHOT.jar"
+    prompt: "Package name"
+
+  tasks:
+    - name: provision SystemD
+      copy:
+        src: files/etc/systemd/system/myapp.service
+        dest: /etc/systemd/system/myapp.service
+        mode: 644
+
+    - name: create directory if needed
+      file:
+        path: /var/myapp
+        state: directory
+        mode: 0775
+
+    - name: deploy Package
+      copy:
+        src: files/var/myapp/{{ package }}
+        dest: /var/myapp/{{ package }}
+        mode: 644
+
+    - name: link current package
+      file:
+        path: /var/myapp/current
+        src: /var/myapp/{{ package }}
+        state: link
+
