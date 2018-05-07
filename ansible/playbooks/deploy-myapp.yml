@@ -1,4 +1,4 @@
-- name: provision my-appserver
+- name: provision myapp-server
   hosts: "myapp-server"
   become: yes
 
@@ -24,11 +24,16 @@
       copy:
         src: files/var/myapp/{{ package }}
         dest: /var/myapp/{{ package }}
-        mode: 644
+        mode: 755
 
     - name: link current package
       file:
         path: /var/myapp/current
         src: /var/myapp/{{ package }}
         state: link
+
+    - name: restart service
+      service:
+        name: myapp
+        state: restarted
 

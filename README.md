@@ -31,26 +31,26 @@ _AWS Image_-te ise tegemiseks on oma tööriistad, näiteks [Packer](https://www
 * `terraform plan` näitab, et mida käivitades tegema hakatakse, aga ei tee veel ühtegi tegevust.
 * Kui kõik tundub plaanis sobivat, siis käivita `terraform apply` ja kirjuta yes, server peaks tekitatama ja seadistatama.
 
-EC2 serveril on vaikimisi ka avalik dünaamiline IP aadress, mis kirjutatakse faili `ip_address.txt`. Kui kõik õnnestus, siis peaksid ssh ja oma privaatvõtme abil sinna ligi pääsema. Näit:
+* EC2 serveril on vaikimisi ka avalik dünaamiline IP aadress, mis kirjutatakse faili `ip_address.txt`. Kui kõik õnnestus, siis peaksid ssh ja oma privaatvõtme abil sinna ligi pääsema. Näit:
 
- `# IP=$(cat ip_address.txt) ssh ec2-user@${IP}`
+  `# IP=$(cat ip_address.txt); ssh ec2-user@${IP}`
 
-Lisaks tekkis nüüd tf kataloogi ka tfstate fail, mis sisaldab AWS viimast _state_-i nii nagu terraform seda teab. tfstate tuleks muudatuste tegemisel committida reposse ja seal peaks alati olema viimane versioon. Seega ei ole Terraformi repodes hea branchides terraformi tööle lasta.
+Lisaks tekkis nüüd tf kataloogi ka `terraform.tfstate` fail, mis sisaldab AWS viimast _state_-i nii nagu terraform seda teab. tfstate tuleks muudatuste tegemisel committida reposse ja seal peaks alati olema viimane versioon. Seega ei ole Terraformi repodes hea branchides terraformi tööle lasta.
 
 Tekitasime Terraformi abil linux serveri, millel on Openjdk 8 ja dünaamiline avalik ip aadress.
 
-Kuigi otsest tarvidust ei ole ja kõik saaks ka terraformi abil ära teha, siis õppimise eesmärgil teeme järgmised sammud Ansible-nimelise tarkvara abil (Vt järgmine jaotus).
+Kuigi otsest tarvidust ei ole ja kõik saaks soovi korral ka terraformi abil ära teha, siis õppimise eesmärgil teeme järgmised sammud Ansible-nimelise tarkvara abil (Vt järgmine jaotus).
  
-*NB! Peale töö lõpetamist ära unusta kirjutamast `terraform destroy`, et kõik terraformi poolt loodud ressursid ära kustutada. Kui tahad proovida ka boonussammu Ansible abil, siis ära seda veel tee.*
+*NB! Peale töö lõpetamist ära unusta kirjutamast `terraform destroy`, et kõik terraformi poolt loodud ressursid ära kustutada. Kui tahad läbida ka järgmist sammu Ansible abil, siis ära seda veel tee.
 
 ### Ansible (boonusülesanne)
 Ansible on serverite provisioneerimise, konfiguratsioonihalduse ja CD platvorm, mis kasutab definitsioonides [YAML](http://yaml.org/) süntaksit. Serveritega ühendub ta üle ssh ja mingeid agente ei vaja. Windows ei ole kontrolliva hostina toetatud. Windowsi omanikud peaksid kasutama muud virtualiseeritud operatsioonisüsteemi. Ansible seob defineeritud ülesanded (taskid)  _play_-deks. _Playbook_ kirjeldab ühte või mitut _play_-d. Siin on kirjeldatud lihtne _playbook_ Ansible abil sinu Spring Boot rakenduse _deployment_-iks. 
 
-* Installeeri oma platvormile Ansible _control-host_ nagu kirjeldatud [siin](http://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#installing-the-control-machine) Hea on selleks luua Python virtual environment, et mitte systeemseid pythoni teeke kasutada.
+* Installeeri oma platvormile Ansible _control-host_ nagu kirjeldatud [siin](http://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#installing-the-control-machine) Hea on selleks luua Python virtual environment, et mitte süsteemseid pythoni teeke kasutada.
 
-* Muuda ansible kataloogis ära `ansible_ssh_host` failis `inventory.ini`. Terraformiga loodud serveri IP aadressi leiad `tf/ip_address.txt` failist.
+* Muuda ansible kataloogis ära `ansible_ssh_host` väärtus failis `inventory.ini`. Terraformiga loodud serveri IP aadressi leiad `tf/ip_address.txt` failist. Inventory on grupeeritud kogum Ansible hostidest, mida saab laadida ka dünaamiliselt, aga siin teeme seda staatiliselt.
 
-* Kui kõik on õigesti seadistatud, siis ansible kataloogis `ansible my-appserver -m pin` käivitades peaks rohelise `SUCCESS` vastuse saama.
+* Kui kõik on õigesti seadistatud, siis ansible kataloogis `ansible myapp-server -m ping` käivitades peaks rohelise `SUCCESS` vastuse saama.
 
 * Buildi oma projektist käivitatav kõikide sõltuvustega JAR. Kui kasutasid start.spring.io projekti initsialiseerijat ja gradle build tooli, siis vajadusel lisa oma build.gradle faili järgmised read:
     ```
@@ -60,7 +60,7 @@ Ansible on serverite provisioneerimise, konfiguratsioonihalduse ja CD platvorm, 
     ```
     ning buildi projekt käsuga `gradlew bootJar`. `build` kataloogi tekkinud jar fail peaks olema nüüd iseseisvalt käivitatav. Kui see samm ei õnnestu, siis käivitatav demo jar fail on ka siin repos.
 
-* Kopeeri build package ehk eelmises sammus saadud JAR fail `ansible/playbooks/files/var/myapp` kataloogi. Kes demo projektiga piirdub, siis võib järgmise sammu juurde liikuda.
+* Kopeeri build package ehk eelmises sammus saadud JAR fail `ansible/playbooks/files/var/myapp` kataloogi. Kes lisatud demo JAR-iga piirdub, see võib järgmise sammu juurde liikuda.
 
 * Käivita Ansible playbook rakenduse _deploymiseks_ käsuga `ansible-playbook playbooks/deploy-myapp.yml`. Ansible küsib jar faili täpselt nime, selle võib copy-pasteda.
 
