@@ -62,7 +62,7 @@ Ansible seob defineeritud ülesanded (taskid)  _play_-deks. _Playbook_ kirjeldab
 
 * Installeeri oma platvormile Ansible _control-host_ nagu kirjeldatud [siin](http://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#installing-the-control-machine) Kui installeerid Pythoni kaudu, siis tasub kindlasti luua [Python virtual environment](https://virtualenvwrapper.readthedocs.io/en/latest/install.html), et mitte süsteemseid pythoni teeke risustada ja konflikte ära hoida.
 
-* Muuda ansible kataloogis ära `ansible_ssh_host` väärtus failis `inventory.ini`. `ansible_ssh_host` on remote provisioneeritava ip aadress (mitte selle masina aadress, kus te ansiblet installeerisite), EC2 serveri puhul leiad IP failist `ip_address.txt`. Ehk siis see on selle masina IP, kus programm tööle hakkab.
+* Muuda ansible kataloogis ära `ansible_ssh_host` väärtus failis `inventory.ini`. `ansible_ssh_host` on remote provisioneeritava ip aadress (mitte selle masina aadress, kus te ansiblet installeerisite), EC2 serveri puhul leiad selle IP oma aws konsoolist. Ehk siis see on selle masina IP, kus programm tööle hakkab.
 
 Kui lahendasid vabatahtliku osa, siis Terraformiga loodud serveri IP aadressi leiad `tf/ip_address.txt` failist. Inventory on grupeeritud kogum Ansible hostidest, mida saab laadida ka dünaamiliselt, aga siin teeme seda staatiliselt.
 
