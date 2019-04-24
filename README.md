@@ -62,7 +62,7 @@ Ansible seob defineeritud ülesanded (taskid)  _play_-deks. _Playbook_ kirjeldab
 
 * Installeeri oma platvormile Ansible _control-host_ nagu kirjeldatud [siin](http://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#installing-the-control-machine) Kui installeerid Pythoni kaudu, siis tasub kindlasti luua [Python virtual environment](https://virtualenvwrapper.readthedocs.io/en/latest/install.html), et mitte süsteemseid pythoni teeke risustada ja konflikte ära hoida.
 
-* Muuda ansible kataloogis ära `ansible_ssh_host` väärtus failis `inventory.ini`. EC2 serveri puhul leiad IP failist `ip_address.txt`. Kui lahendasid vabatahtliku osas, siis Terraformiga loodud serveri IP aadressi leiad `tf/ip_address.txt` failist. Inventory on grupeeritud kogum Ansible hostidest, mida saab laadida ka dünaamiliselt, aga siin teeme seda staatiliselt.
+* Muuda ansible kataloogis ära `ansible_ssh_host` väärtus failis `inventory.ini`. EC2 serveri puhul leiad IP failist `ip_address.txt`. Kui lahendasid vabatahtliku osa, siis Terraformiga loodud serveri IP aadressi leiad `tf/ip_address.txt` failist. Inventory on grupeeritud kogum Ansible hostidest, mida saab laadida ka dünaamiliselt, aga siin teeme seda staatiliselt.
 
 * Kui kõik on õigesti seadistatud, siis ansible kataloogis `ansible myapp-server -m ping` käivitades peaks rohelise `SUCCESS` vastuse saama.
 
