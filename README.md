@@ -11,31 +11,6 @@ Ansible ülesanne on lahendatav lokaalses masinas.
 3. Ansible ülesanne on praksiülesanne, Terraform on vabatahtlik neile, kes soovivad teemat paremini tunda.
 
 
-### Ansible (praksiülesanne)
-Ansible on serverite provisioneerimise, konfiguratsioonihalduse ja CD platvorm, mis kasutab definitsioonides [YAML](http://yaml.org/) süntaksit. Serveritega ühendub ta üle ssh ja mingeid agente ei vaja. Windows ei ole kontrolliva hostina toetatud. Windowsi omanikud peaksid kasutama muud virtualiseeritud operatsioonisüsteemi. Ansible seob defineeritud ülesanded (taskid)  _play_-deks. _Playbook_ kirjeldab ühte või mitut _play_-d. Siin on kirjeldatud lihtne _playbook_ Ansible abil sinu Spring Boot rakenduse _deployment_-iks. 
-
-* Installeeri oma platvormile Ansible _control-host_ nagu kirjeldatud [siin](http://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#installing-the-control-machine) Kui installeerid Pythoni kaudu, siis tasub kindlasti luua [Python virtual environment](https://virtualenvwrapper.readthedocs.io/en/latest/install.html), et mitte süsteemseid pythoni teeke risustada ja konflikte ära hoida.
-
-* Muuda ansible kataloogis ära `ansible_ssh_host` väärtus failis `inventory.ini`. Terraformiga loodud serveri IP aadressi leiad `tf/ip_address.txt` failist. Inventory on grupeeritud kogum Ansible hostidest, mida saab laadida ka dünaamiliselt, aga siin teeme seda staatiliselt.
-
-* Kui kõik on õigesti seadistatud, siis ansible kataloogis `ansible myapp-server -m ping` käivitades peaks rohelise `SUCCESS` vastuse saama.
-
-* Buildi oma projektist käivitatav kõikide sõltuvustega JAR. Käivitatav JAR on Spring Boot võimekus, mis kasutab asjaolu, et shell script alustab lugemist faili algusest, aga java jar faili lugemist lõpust. Rohkem on sellest kirjutatud (siin)[https://docs.spring.io/spring-boot/docs/current/reference/html/deployment-install.html]. Kui kasutasid start.spring.io projekti initsialiseerijat ja gradle build tooli, siis aitab sellest, kui lisad oma build.gradle faili järgmised read:
-    ```
-    bootJar {
-        launchScript()
-    }
-    ```
-    ning buildid projekt käsuga `gradlew bootJar`. `build` kataloogi tekkinud jar fail peaks olema nüüd iseseisvalt käivitatav. Kui see samm ei õnnestu, siis käivitatav demo jar fail on ka siin repos ansible failide kataloogis.
-
-* Kes lisatud demo JAR-iga piirdub, see võib järgmise sammu juurde liikuda. Kopeeri build package ehk eelmises sammus saadud JAR fail `ansible/playbooks/files/var/myapp` kataloogi.
-
-* Käivita Ansible playbook rakenduse _deploymiseks_ käsuga `ansible-playbook playbooks/deploy-myapp.yml`. Ansible küsib jar faili täpselt nime, selle võib copy-pasteda.
-
-* Kui Ansible _deployment_ on edukalt lõpetanud, siis võid brauseriga minna oma rakenduse serveri IP aadressile pordile 8080 ja pääsed rakendusele ligi.
-
-
-
 ### Terraform (vabatahtlik)
 Terraform on IaC platvorm, mis võimaldab kasutada definitsioonides nii JSON, kui ka enda formaati. Näited on Terraformi formaadis. Terraform oskab ressursse hallata läbi mitmete pilveteenusepakkujate API-de, siin kasutame Amazon Web Serviceid.
 * [Downloadi](https://www.terraform.io/downloads.html) ja paki lahti Terraform oma platvormile. Tegemist on ühe käivitatava failiga, mis peaks olema kataloogis, mis sisaldub süsteemses PATH-s. Eraldi installeerimist vaja ei ole.
@@ -77,3 +52,32 @@ Tekitasime Terraformi abil linux serveri, millel on Openjdk 8 ja dünaamiline av
 Kuigi otsest tarvidust ei ole ja kõik saaks soovi korral ka terraformi abil ära teha, siis õppimise eesmärgil teeme järgmised sammud Ansible-nimelise tarkvara abil.
  
 * NB! Peale töö lõpetamist ära unusta kirjutamast `terraform destroy`, et kõik terraformi poolt loodud ressursid ära kustutada. Kui tahad läbida ka järgmist sammu Ansible abil, siis ära destroy veel tee.
+
+
+
+### Ansible (praksiülesanne)
+Ansible on serverite provisioneerimise, konfiguratsioonihalduse ja CD platvorm, mis kasutab definitsioonides [YAML](http://yaml.org/) süntaksit. Serveritega ühendub ta üle ssh ja mingeid agente ei vaja. Windows ei ole kontrolliva hostina toetatud. Windowsi omanikud peaksid kasutama muud virtualiseeritud operatsioonisüsteemi. Lihtne lahendus on kasutada AWS EC2 serverit (kloonige repo sinna ja andke tuld). 
+
+Ansible seob defineeritud ülesanded (taskid)  _play_-deks. _Playbook_ kirjeldab ühte või mitut _play_-d. Siin on kirjeldatud lihtne _playbook_ Ansible abil sinu Spring Boot rakenduse _deployment_-iks. 
+
+* Installeeri oma platvormile Ansible _control-host_ nagu kirjeldatud [siin](http://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#installing-the-control-machine) Kui installeerid Pythoni kaudu, siis tasub kindlasti luua [Python virtual environment](https://virtualenvwrapper.readthedocs.io/en/latest/install.html), et mitte süsteemseid pythoni teeke risustada ja konflikte ära hoida.
+
+* Muuda ansible kataloogis ära `ansible_ssh_host` väärtus failis `inventory.ini`. EC2 serveri puhul leiad IP failist `ip_address.txt`. Kui lahendasid vabatahtliku osas, siis Terraformiga loodud serveri IP aadressi leiad `tf/ip_address.txt` failist. Inventory on grupeeritud kogum Ansible hostidest, mida saab laadida ka dünaamiliselt, aga siin teeme seda staatiliselt.
+
+* Kui kõik on õigesti seadistatud, siis ansible kataloogis `ansible myapp-server -m ping` käivitades peaks rohelise `SUCCESS` vastuse saama.
+
+* Buildi oma projektist käivitatav kõikide sõltuvustega JAR. Käivitatav JAR on Spring Boot võimekus, mis kasutab asjaolu, et shell script alustab lugemist faili algusest, aga java jar faili lugemist lõpust. Rohkem on sellest kirjutatud (siin)[https://docs.spring.io/spring-boot/docs/current/reference/html/deployment-install.html]. Kui kasutasid start.spring.io projekti initsialiseerijat ja gradle build tooli, siis aitab sellest, kui lisad oma build.gradle faili järgmised read:
+    ```
+    bootJar {
+        launchScript()
+    }
+    ```
+    ning buildid projekt käsuga `gradlew bootJar`. `build` kataloogi tekkinud jar fail peaks olema nüüd iseseisvalt käivitatav. Kui see samm ei õnnestu, siis käivitatav demo jar fail on ka siin repos ansible failide kataloogis.
+
+* Kes lisatud demo JAR-iga piirdub, see võib järgmise sammu juurde liikuda. Kopeeri build package ehk eelmises sammus saadud JAR fail `ansible/playbooks/files/var/myapp` kataloogi.
+
+* Käivita Ansible playbook rakenduse _deploymiseks_ käsuga `ansible-playbook playbooks/deploy-myapp.yml`. Ansible küsib jar faili täpselt nime, selle võib copy-pasteda.
+
+* Kui Ansible _deployment_ on edukalt lõpetanud, siis võid brauseriga minna oma rakenduse serveri IP aadressile pordile 8080 ja pääsed rakendusele ligi.
+
+
